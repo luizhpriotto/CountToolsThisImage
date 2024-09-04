@@ -11,7 +11,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $data = json_encode(['image' => $image]);
     $options = [
         'http' => [
-            'header'  => "Content-type: application/json\r\n"
+            'header'  => "Content-type: application/json\r\n",
             'method'  => 'POST',
             'content' => $data,
         ],
