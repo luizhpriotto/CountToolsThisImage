@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload de Imagem</title>
+    <style>
+        #result {
+            margin-top: 20px;
+        }
+        img {
+            max-width: 100%;
+            height: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>Upload de Imagem</h1>
+    <input type="file" id="fileInput" accept="image/*">
+    <button onclick="uploadImage()">Enviar Imagem</button>
+
+    <div id="result">
+        <h2>Imagem:</h2>
+        <img id="uploadedImage" src="" alt="Imagem Upload">
+        <h2>Resposta da API:</h2>
+        <p id="apiResponse"></p>
+    </div>
+
+    <script>
+        async function uploadImage() {
+            const fileInput = document.getElementById('fileInput');
+            const file = fileInput.files[0];
+
+            if (!file) {
+                alert('Por favor, selecione uma imagem primeiro.');
+                return;
+            }
+
+            // Ler o arquivo como base64
+            const reader = new FileReader();
+            reader.onload = async function(event) {
+                const base64Image = event.target.result.split(',')[1];
+
+                // Enviar a imagem base64 para o script PHP
+                const response = await fetch('upload.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    body: new URLSearchParams({
+                        'image': base64Image
+                    })
+                });
+
+                const responseData = await response.json();
+
+                // Mostrar a imagem e a resposta
+                document.getElementById('uploadedImage').src = `data:image/jpeg;base64,${base64Image}`;
+                document.getElementById('apiResponse').textContent = responseData.response || 'Erro ao obter resposta da API.';
+            };
+
+            reader.readAsDataURL(file);
+        }
+    </script>
+</body>
+</html>
